@@ -22,6 +22,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+// add dotenv to app.js
+require('dotenv').config();
+
+// add mongoose to app.js
+var mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+
+
+// add /users route to list all users from momgodb
+var User = require('./models/user');
+app.get('/users', function(req, res, next) {
+  User.find(function(err, users) {
+    if (err) {
+      console.log(err);
+      res.end(err);
+    }
+    else {
+      res.json(users);
+    }
+  }
+  );
+});
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
